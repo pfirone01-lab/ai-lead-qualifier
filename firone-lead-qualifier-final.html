@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Lead Qualifier — Firone Automations</title>
+
+  <!-- Google Fonts: Inter for UI, JetBrains Mono for output cards -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ─── Design Tokens ─────────────────────────────────────────────────── */
+    :root {
+      --bg:            #0D0F12;
+      --surface:       #151820;
+      --surface-raised:#1C2028;
+      --border:        #252A35;
+      --accent:        #00C896;
+      --accent-dim:    rgba(0,200,150,0.12);
+      --accent-glow:   rgba(0,200,150,0.25);
+      --urgent-high:   #FF5E5E;
+      --urgent-med:    #FFB347;
+      --urgent-low:    #00C896;
+      --text-primary:  #F0F2F5;
+      --text-secondary:#8A92A3;
+      --text-muted:    #4E5568;
+      --radius-sm:     6px;
+      --radius-md:     10px;
+      --radius-lg:     16px;
+      --font-ui:       'Inter', system-ui, sans-serif;
+      --font-mono:     'JetBrains Mono', monospace;
+      --transition:    160ms ease;
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 0 0 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────────────────── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(13,15,18,0.92);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-mark {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0D0F12;
+      letter-spacing: -0.5px;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.2px;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-top: 1px;
+    }
+
+    .header-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,200,150,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── Main Layout ────────────────────────────────────────────────────── */
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 24px 0;
+    }
+
+    /* ─── Page Intro ─────────────────────────────────────────────────────── */
+    .intro {
+      margin-bottom: 36px;
+    }
+
+    .intro h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .intro h1 span {
+      color: var(--accent);
+    }
+
+    .intro p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 560px;
+    }
+
+    /* ─── Input Panel ────────────────────────────────────────────────────── */
+    .input-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .panel-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    textarea#lead-input {
+      width: 100%;
+      min-height: 140px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    textarea#lead-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea#lead-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* textarea invalid state — shown during validation failure */
+    textarea#lead-input.input-error {
+      border-color: var(--urgent-high);
+      box-shadow: 0 0 0 3px rgba(255,94,94,0.15);
+    }
+
+    /* ─── Character Counter ───────────────────────────────────────────────── */
+    /* Sits below the textarea, updates live as the user types */
+    #char-counter {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: block;
+      text-align: right;
+      transition: color var(--transition);
+      font-family: var(--font-mono);
+    }
+
+    /* Red when under the 20-character minimum */
+    #char-counter.counter-warning {
+      color: var(--urgent-high);
+    }
+
+    /* ─── Validation Error (inline below textarea) ────────────────────────── */
+    /* Shown when input is empty or under 20 chars before API call */
+    #validation-error {
+      display: none;
+      font-size: 12px;
+      color: var(--urgent-high);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    #validation-error.visible {
+      display: block;
+    }
+
+    /* ─── Action Row ─────────────────────────────────────────────────────── */
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      align-items: center;
+    }
+
+    /* Qualify button — primary CTA */
+    #qualify-btn {
+      flex: 1;
+      padding: 13px 24px;
+      background: var(--accent);
+      color: #0D0F12;
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: -0.1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Pulsing animation on the button during loading — keyframes defined below */
+    #qualify-btn.loading-pulse {
+      animation: btnPulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes btnPulse {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
+    #qualify-btn:hover:not(:disabled) {
+      opacity: 0.9;
+      box-shadow: 0 4px 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    #qualify-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    #qualify-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Clear button — ghost */
+    #clear-btn {
+      padding: 13px 20px;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color var(--transition), border-color var(--transition);
+      white-space: nowrap;
+    }
+
+    #clear-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+    }
+
+    /* ─── Loading State ───────────────────────────────────────────────────── */
+    /* Loading message shown below the action row while API call is in flight */
+    #loading-message {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    #loading-message.visible {
+      display: flex;
+    }
+
+    /* Spinner for the loading message */
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(0,200,150,0.3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 600ms linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Clear confirmation message — shown for 2 seconds after clear */
+    #clear-confirm {
+      display: none;
+      font-size: 12px;
+      color: var(--accent);
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    #clear-confirm.visible {
+      display: block;
+    }
+
+    /* ─── Error Display ───────────────────────────────────────────────────── */
+    /* Full error box shown below results when an API call fails */
+    #error-display {
+      display: none;
+      padding: 16px 18px;
+      background: rgba(255,94,94,0.08);
+      border: 1px solid rgba(255,94,94,0.25);
+      border-radius: var(--radius-md);
+      margin-top: 16px;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #error-display.visible { display: flex; }
+
+    .error-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .error-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .error-content { flex: 1; }
+
+    .error-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--urgent-high);
+      margin-bottom: 4px;
+    }
+
+    .error-message {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    /* Possible reasons list inside the error box */
+    .error-reasons {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .error-reasons li::before {
+      content: '→  ';
+      color: var(--urgent-high);
+      font-weight: 600;
+    }
+
+    /* Retry button inside the error box */
+    #retry-btn {
+      align-self: flex-start;
+      padding: 8px 16px;
+      background: transparent;
+      color: var(--urgent-high);
+      border: 1px solid rgba(255,94,94,0.4);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition);
+      letter-spacing: 0.2px;
+    }
+
+    #retry-btn:hover {
+      background: rgba(255,94,94,0.1);
+      border-color: var(--urgent-high);
+    }
+
+    /* ─── Results Section ────────────────────────────────────────────────── */
+    #results-section {
+      display: none;
+      animation: fadeUp 300ms ease forwards;
+    }
+
+    #results-section.visible { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .results-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .results-timestamp {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ─── Result Cards ───────────────────────────────────────────────────── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Full-width cards */
+    .card-full { grid-column: 1 / -1; }
+
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      transition: border-color var(--transition);
+    }
+
+    .result-card:hover {
+      border-color: var(--accent);
+    }
+
+    .card-eyebrow {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    /* Lead type card — accent left border */
+    #card-lead-type {
+      border-left: 3px solid var(--accent);
+    }
+
+    /* Urgency card — dynamic colour on the value */
+    .urgency-high  { color: var(--urgent-high) !important; }
+    .urgency-medium{ color: var(--urgent-med) !important; }
+    .urgency-low   { color: var(--urgent-low) !important; }
+
+    /* Confidence card — dynamic colour matching confidence level */
+    .confidence-high   { color: var(--urgent-low) !important; }   /* green */
+    .confidence-medium { color: var(--urgent-med) !important; }   /* amber */
+    .confidence-low    { color: var(--urgent-high) !important; }  /* red   */
+
+    /* Recommended action — slightly larger, body weight */
+    #card-recommended .card-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    /* Draft response — monospace, scrollable block */
+    #card-draft {
+      background: var(--surface-raised);
+    }
+
+    #card-draft .card-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ─── Card Header Row (eyebrow + copy button) ─────────────────────────── */
+    /* Used on any card that has a copy button */
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    /* Copy button — shown on all four result cards */
+    .copy-btn {
+      font-size: 11px;
+      font-family: var(--font-ui);
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: color var(--transition), border-color var(--transition);
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ─── Save as PDF Row ────────────────────────────────────────────────── */
+    /* Lives inside #results-section so it shows/hides with it automatically */
+    #pdf-row {
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    #save-pdf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 18px;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+    }
+
+    #save-pdf-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+      background: var(--surface);
+    }
+
+    /* ─── Print Styles (for Save as PDF) ─────────────────────────────────── */
+    @media print {
+      /* Hide everything except the results section */
+      header, .intro, .input-panel, #pdf-row, footer, #setup-notice {
+        display: none !important;
+      }
+
+      body {
+        background: #fff !important;
+        color: #111 !important;
+        padding: 0 !important;
+        font-family: 'Inter', system-ui, sans-serif;
+      }
+
+      main {
+        max-width: 100% !important;
+        padding: 24px !important;
+      }
+
+      #results-section {
+        display: block !important;
+      }
+
+      .result-card {
+        background: #f9f9f9 !important;
+        border: 1px solid #ddd !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      .card-eyebrow { color: #555 !important; }
+      .card-value   { color: #111 !important; }
+
+      /* Hide copy buttons in print */
+      .copy-btn { display: none !important; }
+
+      /* Urgency colours need to survive print */
+      .urgency-high   { color: #c00 !important; }
+      .urgency-medium { color: #b66000 !important; }
+      .urgency-low    { color: #007a50 !important; }
+
+      .confidence-high   { color: #007a50 !important; }
+      .confidence-medium { color: #b66000 !important; }
+      .confidence-low    { color: #c00 !important; }
+
+      .results-label    { color: #555 !important; }
+      .results-timestamp{ color: #777 !important; }
+    }
+
+    /* ─── Setup Notice Banner ────────────────────────────────────────────── */
+    /* Unobtrusive top banner with setup instructions for new users */
+    #setup-notice {
+      background: #FFE600;
+      border-bottom: 1px solid #D4C000;
+      padding: 8px 48px 8px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #000;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    #setup-notice a {
+      color: #000;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    #setup-notice a:hover {
+      opacity: 0.7;
+    }
+
+    #setup-notice code {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: rgba(0,0,0,0.12);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    /* Dismiss button — top-right corner of the banner */
+    #dismiss-notice {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #000;
+      font-size: 16px;
+      line-height: 1;
+      padding: 4px 6px;
+      opacity: 0.5;
+      transition: opacity var(--transition);
+    }
+
+    #dismiss-notice:hover {
+      opacity: 1;
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      margin-top: 64px;
+      padding: 0 24px;
+    }
+
+    footer p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* ─── Responsive ─────────────────────────────────────────────────────── */
+    @media (max-width: 560px) {
+      header { padding: 16px 18px; }
+      main { padding: 32px 16px 0; }
+      .intro h1 { font-size: 21px; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .card-full { grid-column: 1; }
+      .action-row { flex-direction: column; }
+      #qualify-btn, #clear-btn { width: 100%; }
+    }
+
+    /* ─── Reduced motion ─────────────────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Setup Notice Banner ─────────────────────────────────────────────── -->
+  <div id="setup-notice">
+    To use this app: get a free API key at <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> and paste it into the source code where it says <code>YOUR_GROQ_API_KEY</code>.
+    <button id="dismiss-notice" aria-label="Dismiss this notice">✕</button>
+  </div>
+
+  <!-- ─── Header ─────────────────────────────────────────────────────────── -->
+  <header>
+    <div class="logo">
+      <div class="logo-mark">N</div>
+      <div>
+        <div class="logo-text">Firone Automations</div>
+        <div class="logo-sub">AI Lead Qualifier</div>
+      </div>
+    </div>
+    <div class="header-badge">llama-3.3-70b</div>
+  </header>
+
+  <!-- ─── Main Content ────────────────────────────────────────────────────── -->
+  <main>
+
+    <!-- Page intro -->
+    <div class="intro">
+      <h1>Qualify a lead in <span>seconds</span></h1>
+      <p>
+        Paste a raw lead message below — WhatsApp, email, enquiry form, or DM.
+        The AI will classify it, rate urgency, recommend a next action,
+        and draft the first response for you.
+      </p>
+    </div>
+
+    <!-- Input panel -->
+    <div class="input-panel">
+      <div class="panel-label">Lead Message</div>
+
+      <textarea
+        id="lead-input"
+        rows="6"
+        placeholder="Paste the lead's message here. Can be a WhatsApp text, email body, enquiry form submission, or forwarded DM. The more context you include, the better the qualification."
+        spellcheck="true"
+        aria-label="Lead message input"
+      ></textarea>
+
+      <!-- Character counter — updates live as the user types -->
+      <span id="char-counter">0 characters</span>
+
+      <!-- Inline validation error — shown before API call if input is invalid -->
+      <div id="validation-error" role="alert"></div>
+
+      <!-- Action buttons -->
+      <div class="action-row">
+        <button id="qualify-btn" aria-label="Qualify this lead">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <path d="M7.5 1L13.5 7.5L7.5 14M1 7.5H13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Qualify Lead
+        </button>
+        <button id="clear-btn" aria-label="Clear form and results">
+          Clear
+        </button>
+      </div>
+
+      <!-- Loading message — visible while API call is in flight -->
+      <div id="loading-message" role="status" aria-live="polite">
+        <div class="spinner"></div>
+        <span>Qualifying lead… this takes a few seconds.</span>
+      </div>
+
+      <!-- Clear confirmation — shown for 2 seconds after the clear button is pressed -->
+      <div id="clear-confirm" aria-live="polite">Cleared — ready for the next lead.</div>
+
+      <!-- API error box — shown below results when the call fails; includes retry button -->
+      <div id="error-display" role="alert" aria-live="assertive">
+        <div class="error-top">
+          <span class="error-icon">⚠</span>
+          <div class="error-content">
+            <div class="error-title">Something went wrong</div>
+            <div class="error-message" id="error-message-text"></div>
+            <ul class="error-reasons">
+              <li>Check your API key is correct</li>
+              <li>Check your internet connection</li>
+              <li>The service may be temporarily unavailable</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Retry button re-submits the same input without the user retyping it -->
+        <button id="retry-btn" aria-label="Retry the last submission">↺ Retry</button>
+      </div>
+    </div>
+
+    <!-- ─── Results Section — hidden until a response arrives ─────────────── -->
+    <div id="results-section" aria-live="polite">
+      <div class="results-header">
+        <div class="results-label">Qualification Result</div>
+        <div class="results-timestamp" id="results-timestamp"></div>
+      </div>
+
+      <div class="cards-grid">
+
+        <!-- Card 1: Lead Type -->
+        <div class="result-card" id="card-lead-type">
+          <div class="card-header-row">
+            <div class="card-eyebrow">Lead Type</div>
+            <button class="copy-btn" id="copy-lead-type-btn" aria-label="Copy lead type to clipboard">Copy</button>
+          </div>
+          <div class="card-value" id="value-lead-type">—</div>
+        </div>
+
+        <!-- Card 2: Urgency -->
+        <div class="result-card" id="card-urgency">
+          <div class="card-header-row">
+            <div class="card-eyebrow">Urgency</div>
+            <button class="copy-btn" id="copy-urgency-btn" aria-label="Copy urgency to clipboard">Copy</button>
+          </div>
+          <div class="card-value" id="value-urgency">—</div>
+        </div>
+
+        <!-- Card 3: Recommended Action -->
+        <div class="result-card" id="card-recommended">
+          <div class="card-header-row">
+            <div class="card-eyebrow">Recommended Action</div>
+            <button class="copy-btn" id="copy-recommended-btn" aria-label="Copy recommended action to clipboard">Copy</button>
+          </div>
+          <div class="card-value" id="value-recommended-action">—</div>
+        </div>
+
+        <!-- Card 4: Confidence — calculated from input length in JS, not from AI -->
+        <div class="result-card" id="card-confidence">
+          <div class="card-header-row">
+            <div class="card-eyebrow">Confidence</div>
+            <button class="copy-btn" id="copy-confidence-btn" aria-label="Copy confidence level to clipboard">Copy</button>
+          </div>
+          <div class="card-value" id="value-confidence">—</div>
+        </div>
+
+        <!-- Card 5: Draft Response — full width -->
+        <div class="result-card card-full" id="card-draft">
+          <div class="card-header-row">
+            <div class="card-eyebrow">Draft Response</div>
+            <button class="copy-btn" id="copy-draft-btn" aria-label="Copy draft response to clipboard">Copy</button>
+          </div>
+          <div class="card-value" id="value-draft-response">—</div>
+        </div>
+
+      </div>
+
+      <!-- Save as PDF button — only visible when results are showing -->
+      <div id="pdf-row">
+        <button id="save-pdf-btn" aria-label="Save qualification result as PDF">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M2 10v2a1 1 0 001 1h8a1 1 0 001-1v-2M7 1v8M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Save as PDF
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ─── Footer ─────────────────────────────────────────────────────────── -->
+  <footer>
+    <p>Built by <a href="#" target="_blank" rel="noopener">Firone Automations</a> · Powered by Groq + Llama 3.3 70B</p>
+  </footer>
+
+
+  <script>
+    // ─────────────────────────────────────────────────────────────────────────
+    // CONFIGURATION
+    // Replace 'YOUR_GROQ_API_KEY' with your actual Groq API key before use.
+    // Do not commit your real key to any public repository.
+    // ─────────────────────────────────────────────────────────────────────────
+    const GROQ_API_KEY = 'YOUR_GROQ_API_KEY';
+    const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
+    const MODEL = 'llama-3.3-70b-versatile';
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // SYSTEM PROMPT
+    // This is the standing instruction sent to the model on every request.
+    // ─────────────────────────────────────────────────────────────────────────
+    const SYSTEM_PROMPT = `You are an expert lead qualification specialist for Philemon Firone, an automation specialist who builds AI-powered workflow systems for small and medium businesses. Your job is to analyse incoming lead descriptions and return a structured qualification of each lead.
+When given a lead description, you must return ONLY a valid JSON object with exactly these five fields:
+{
+  "lead_type": "",
+  "urgency": "",
+  "recommended_action": "",
+  "draft_response": "",
+  "confidence": ""
+}
+FIELD DEFINITIONS:
+lead_type: Classify the lead as exactly one of these:
+- "Automation Lead" — they want to automate a specific business process
+- "Consulting Lead" — they want advice or a discovery conversation first
+- "Referral Lead" — they were sent by someone else and are pre-warmed
+- "Partnership Enquiry" — they want to collaborate or refer clients
+- "Not a Lead" — off-topic, spam, or not relevant to automation services
+- "Unclear" — not enough information to classify confidently
+urgency: Classify as exactly one of these:
+- "High" — they have an immediate need, a deadline, or strong buying signals
+- "Medium" — they are interested but not in a rush
+- "Low" — they are browsing, researching, or have no timeline
+recommended_action: One specific sentence describing exactly what Philemon should do next with this lead. Be specific — not "follow up" but "Call Sarah today to confirm her weekend viewing schedule and send three property options under $450,000."
+draft_response: A professional, warm, and direct reply from Philemon Firone addressed to the lead by name if their name is mentioned. Under 120 words. Reference their specific situation. End with one clear next step. Do not use filler phrases or corporate language.
+confidence: Calculate based on input detail:
+- "High" — input is over 100 characters with specific details
+- "Medium" — input is between 20 and 100 characters
+- "Low" — input is under 20 characters or very vague
+EDGE CASE RULES:
+If the input is vague or under 20 characters:
+- lead_type: "Unclear"
+- urgency: "Low"
+- recommended_action: "Follow up with the contact to gather more information — ask about their business, the problem they are trying to solve, and their timeline."
+- draft_response: A friendly reply asking for more details about their business and what they are looking to achieve.
+- confidence: "Low"
+If the input is off-topic or not related to automation services:
+- lead_type: "Not a Lead"
+- urgency: "Low"
+- recommended_action: "No action required — this is not a relevant lead."
+- draft_response: "Hi there, thanks for reaching out. Just to let you know this tool is designed specifically for qualifying automation and AI workflow leads. If you have a business process you'd like to automate, I'd love to help — feel free to describe what you're working on."
+- confidence: "Low"
+CRITICAL: Return raw JSON only. No explanation, no markdown, no backticks, no text before or after the JSON object. The entire response must be parseable by JSON.parse() with no pre-processing.`;
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // DOM REFERENCES
+    // All elements that are referenced across multiple functions.
+    // ─────────────────────────────────────────────────────────────────────────
+    const leadInput          = document.getElementById('lead-input');
+    const qualifyBtn         = document.getElementById('qualify-btn');
+    const clearBtn           = document.getElementById('clear-btn');
+    const retryBtn           = document.getElementById('retry-btn');
+    const loadingMessage     = document.getElementById('loading-message');
+    const clearConfirm       = document.getElementById('clear-confirm');
+    const errorDisplay       = document.getElementById('error-display');
+    const errorMessageText   = document.getElementById('error-message-text');
+    const validationError    = document.getElementById('validation-error');
+    const charCounter        = document.getElementById('char-counter');
+    const resultsSection     = document.getElementById('results-section');
+    const resultsTimestamp   = document.getElementById('results-timestamp');
+
+    // Copy buttons — one per card
+    const copyLeadTypeBtn    = document.getElementById('copy-lead-type-btn');
+    const copyUrgencyBtn     = document.getElementById('copy-urgency-btn');
+    const copyRecommendedBtn = document.getElementById('copy-recommended-btn');
+    const copyConfidenceBtn  = document.getElementById('copy-confidence-btn');
+    const copyDraftBtn       = document.getElementById('copy-draft-btn');
+
+    // Save as PDF button
+    const savePdfBtn         = document.getElementById('save-pdf-btn');
+
+    // Result value elements
+    const valueLeadType          = document.getElementById('value-lead-type');
+    const valueUrgency           = document.getElementById('value-urgency');
+    const valueRecommendedAction = document.getElementById('value-recommended-action');
+    const valueConfidence        = document.getElementById('value-confidence');
+    const valueDraftResponse     = document.getElementById('value-draft-response');
+
+    // Stores the last successfully submitted message so the retry button can re-use it
+    let lastSubmittedMessage = '';
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // updateCharCounter()
+    // Reads the current textarea length and updates the counter display.
+    // Turns the counter red when the character count is below the minimum.
+    // Called on every input event.
+    // ─────────────────────────────────────────────────────────────────────────
+    function updateCharCounter() {
+      const len = leadInput.value.length;
+      charCounter.textContent = `${len} character${len === 1 ? '' : 's'}`;
+
+      // Red below the 20-character minimum so the user knows more is needed
+      if (len < 20) {
+        charCounter.classList.add('counter-warning');
+      } else {
+        charCounter.classList.remove('counter-warning');
+      }
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // validateInput(text)
+    // Checks the raw input string before firing the API call.
+    // Returns true if valid, false if not.
+    // Shows the appropriate inline error message when invalid.
+    // ─────────────────────────────────────────────────────────────────────────
+    function validateInput(text) {
+      // Empty field
+      if (!text) {
+        showValidationError('Please describe the lead before submitting.');
+        leadInput.classList.add('input-error');
+        return false;
+      }
+
+      // Under 20 characters
+      if (text.length < 20) {
+        showValidationError('Please provide more detail about the lead — a brief description helps get more accurate results.');
+        leadInput.classList.add('input-error');
+        return false;
+      }
+
+      // Valid input — clear any previous validation state
+      hideValidationError();
+      leadInput.classList.remove('input-error');
+      return true;
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // showValidationError(message) / hideValidationError()
+    // Controls the inline validation error element below the textarea.
+    // ─────────────────────────────────────────────────────────────────────────
+    function showValidationError(message) {
+      validationError.textContent = message;
+      validationError.classList.add('visible');
+    }
+
+    function hideValidationError() {
+      validationError.textContent = '';
+      validationError.classList.remove('visible');
+      leadInput.classList.remove('input-error');
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // calculateConfidence(inputLength)
+    // Returns 'High', 'Medium', or 'Low' based purely on the character count.
+    // This is a client-side calculation — not derived from the AI response.
+    // High: over 100 chars | Medium: 20–100 chars | Low: under 20 chars
+    // ─────────────────────────────────────────────────────────────────────────
+    function calculateConfidence(inputLength) {
+      if (inputLength > 100) return 'High';
+      if (inputLength >= 20) return 'Medium';
+      return 'Low';
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // showLoading()
+    // Puts the UI into loading state: disables the button, starts the pulse
+    // animation, shows the loading message, and hides stale content.
+    // ─────────────────────────────────────────────────────────────────────────
+    function showLoading() {
+      console.log('[Firone] Starting API call — entering loading state');
+      qualifyBtn.disabled = true;
+      // Add pulsing animation to the button while waiting
+      qualifyBtn.classList.add('loading-pulse');
+      qualifyBtn.innerHTML = `
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true" style="opacity:0.5">
+          <path d="M7.5 1L13.5 7.5L7.5 14M1 7.5H13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Qualifying…`;
+      loadingMessage.classList.add('visible');
+      hideError();
+      hideResults();
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // hideLoading()
+    // Restores button to its default state and hides the loading message.
+    // Always called in the finally block so it runs on both success and failure.
+    // ─────────────────────────────────────────────────────────────────────────
+    function hideLoading() {
+      console.log('[Firone] API call complete — exiting loading state');
+      qualifyBtn.disabled = false;
+      qualifyBtn.classList.remove('loading-pulse');
+      qualifyBtn.innerHTML = `
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+          <path d="M7.5 1L13.5 7.5L7.5 14M1 7.5H13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Qualify Lead`;
+      loadingMessage.classList.remove('visible');
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // showError(message)
+    // Displays the API error box with the technical error detail and the
+    // standard three-reason list. The retry button is wired separately.
+    // ─────────────────────────────────────────────────────────────────────────
+    function showError(message) {
+      console.error('[Firone] Error displayed to user:', message);
+      errorMessageText.textContent = message;
+      errorDisplay.classList.add('visible');
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // hideError()
+    // Hides and clears the API error box.
+    // ─────────────────────────────────────────────────────────────────────────
+    function hideError() {
+      errorDisplay.classList.remove('visible');
+      errorMessageText.textContent = '';
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // hideResults()
+    // Hides the results section and resets all card values to their defaults.
+    // Called before each new API call so stale results are never visible.
+    // ─────────────────────────────────────────────────────────────────────────
+    function hideResults() {
+      resultsSection.classList.remove('visible');
+      valueLeadType.textContent          = '—';
+      valueUrgency.textContent           = '—';
+      valueRecommendedAction.textContent = '—';
+      valueConfidence.textContent        = '—';
+      valueDraftResponse.textContent     = '—';
+      // Reset urgency colour class from any previous result
+      valueUrgency.className = 'card-value';
+      // Reset confidence colour class from any previous result
+      valueConfidence.className = 'card-value';
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // applyUrgencyColour(urgencyValue)
+    // Adds the correct CSS class to the urgency card value so it renders
+    // in the colour matching its severity level.
+    // ─────────────────────────────────────────────────────────────────────────
+    function applyUrgencyColour(urgencyValue) {
+      const normalised = urgencyValue.toLowerCase().trim();
+      valueUrgency.className = 'card-value'; // reset first
+      if (normalised === 'high')   valueUrgency.classList.add('urgency-high');
+      if (normalised === 'medium') valueUrgency.classList.add('urgency-medium');
+      if (normalised === 'low')    valueUrgency.classList.add('urgency-low');
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // applyConfidenceColour(confidenceValue)
+    // Adds the correct CSS class to the confidence card value so it renders
+    // in the appropriate colour. Green = High, Amber = Medium, Red = Low.
+    // ─────────────────────────────────────────────────────────────────────────
+    function applyConfidenceColour(confidenceValue) {
+      const normalised = confidenceValue.toLowerCase().trim();
+      valueConfidence.className = 'card-value'; // reset first
+      if (normalised === 'high')   valueConfidence.classList.add('confidence-high');
+      if (normalised === 'medium') valueConfidence.classList.add('confidence-medium');
+      if (normalised === 'low')    valueConfidence.classList.add('confidence-low');
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // renderResults(parsed, inputLength)
+    // Populates each result card with values from the parsed JSON response.
+    // The confidence card is populated from the JS calculation, not the AI.
+    // ─────────────────────────────────────────────────────────────────────────
+    function renderResults(parsed, inputLength) {
+      console.log('[Firone] Rendering results to UI:', parsed);
+
+      // Populate AI-driven cards
+      valueLeadType.textContent          = parsed.lead_type          || 'No value returned';
+      valueUrgency.textContent           = parsed.urgency            || 'No value returned';
+      valueRecommendedAction.textContent = parsed.recommended_action || 'No value returned';
+      valueDraftResponse.textContent     = parsed.draft_response     || 'No value returned';
+
+      // Populate confidence card from client-side calculation
+      const confidenceLevel = calculateConfidence(inputLength);
+      valueConfidence.textContent = confidenceLevel;
+      applyConfidenceColour(confidenceLevel);
+
+      // Apply colour classes
+      applyUrgencyColour(parsed.urgency || '');
+
+      // Stamp the time this result was generated
+      const now = new Date();
+      resultsTimestamp.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Make the results section visible (triggers fadeUp animation)
+      resultsSection.classList.add('visible');
+
+      // Scroll results into view smoothly
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // callGroqAPI(leadMessage)
+    // Sends the lead message to Groq's completions endpoint using the
+    // llama-3.3-70b-versatile model. Returns the raw response text.
+    // Throws an error if the HTTP response status is not ok.
+    // ─────────────────────────────────────────────────────────────────────────
+    async function callGroqAPI(leadMessage) {
+      console.log('[Firone] Preparing Groq API request');
+      console.log('[Firone] Lead message being sent (first 120 chars):', leadMessage.substring(0, 120));
+
+      const requestBody = {
+        model: MODEL,
+        temperature: 0.1,
+        max_tokens: 1024,
+        messages: [
+          {
+            role: 'system',
+            content: SYSTEM_PROMPT
+          },
+          {
+            role: 'user',
+            content: `Qualify this lead:\n\n${leadMessage}`
+          }
+        ]
+      };
+
+      console.log('[Firone] Request body assembled — calling fetch');
+
+      const response = await fetch(GROQ_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GROQ_API_KEY}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('[Firone] Groq API response status:', response.status, response.statusText);
+
+      // If Groq returns a non-2xx status, extract the error body and throw
+      if (!response.ok) {
+        let errorBody = '';
+        try {
+          const errData = await response.json();
+          errorBody = errData?.error?.message || JSON.stringify(errData);
+        } catch {
+          errorBody = `HTTP ${response.status} — ${response.statusText}`;
+        }
+        throw new Error(`Groq API error: ${errorBody}`);
+      }
+
+      const data = await response.json();
+      console.log('[Firone] Full Groq API response received:', data);
+
+      // Extract the model's text content from the OpenAI-compatible response shape
+      const rawText = data?.choices?.[0]?.message?.content;
+
+      if (!rawText) {
+        throw new Error('Groq returned an empty response. Check the model name and your API key.');
+      }
+
+      console.log('[Firone] Raw model output:', rawText);
+      return rawText;
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // parseModelOutput(rawText)
+    // Defensively strips any markdown code fences the model may have added
+    // despite instructions not to, then parses the cleaned string as JSON.
+    // Throws a descriptive error if parsing fails.
+    // ─────────────────────────────────────────────────────────────────────────
+    function parseModelOutput(rawText) {
+      console.log('[Firone] Parsing model output');
+
+      // Strip ```json ... ``` or ``` ... ``` wrappers the model sometimes adds
+      const cleaned = rawText
+        .replace(/```json\s*/gi, '')
+        .replace(/```\s*/g, '')
+        .trim();
+
+      console.log('[Firone] Cleaned output for parsing:', cleaned);
+
+      let parsed;
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (parseError) {
+        console.error('[Firone] JSON.parse failed:', parseError);
+        throw new Error(
+          'The model returned a response that could not be read as JSON. ' +
+          'This sometimes happens with unusual lead messages — try rephrasing and submit again.'
+        );
+      }
+
+      // Validate that the expected fields are present
+      const required = ['lead_type', 'urgency', 'recommended_action', 'draft_response'];
+      const missing  = required.filter(field => !(field in parsed));
+
+      if (missing.length > 0) {
+        console.warn('[Firone] Missing fields in parsed response:', missing);
+        throw new Error(
+          `The model response was missing expected fields: ${missing.join(', ')}. Try submitting again.`
+        );
+      }
+
+      console.log('[Firone] Parsed JSON is valid:', parsed);
+      return parsed;
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // runQualification(leadMessage)
+    // Core qualification flow: loading state → API call → parse → render.
+    // Extracted from handleQualify so both the main button and the retry
+    // button can call the same logic without duplicating it.
+    // ─────────────────────────────────────────────────────────────────────────
+    async function runQualification(leadMessage) {
+      // Store the message so the retry button can re-use it if the call fails
+      lastSubmittedMessage = leadMessage;
+
+      console.log('[Firone] Starting qualification flow for message:', leadMessage.substring(0, 60));
+
+      try {
+        showLoading();
+
+        // Call the Groq API with the lead message
+        const rawText = await callGroqAPI(leadMessage);
+
+        // Parse the JSON response from the model
+        const parsed = parseModelOutput(rawText);
+
+        // Render cards — pass input length for client-side confidence calculation
+        renderResults(parsed, leadMessage.length);
+
+      } catch (error) {
+        console.error('[Firone] Qualification failed:', error);
+        showError(error.message || 'An unexpected error occurred. Check the browser console for details.');
+      } finally {
+        // Always restore the UI from loading state — success or failure
+        hideLoading();
+      }
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // handleQualify()
+    // Handler for the Qualify Lead button click.
+    // Validates input first, then calls runQualification().
+    // ─────────────────────────────────────────────────────────────────────────
+    async function handleQualify() {
+      const leadMessage = leadInput.value.trim();
+
+      // Validate — block API call if input is empty or too short
+      if (!validateInput(leadMessage)) {
+        leadInput.focus();
+        return;
+      }
+
+      // Warn if the placeholder API key hasn't been replaced
+      if (GROQ_API_KEY === 'YOUR_GROQ_API_KEY') {
+        showError(
+          'API key not set. Open the HTML file and replace YOUR_GROQ_API_KEY ' +
+          'with your actual Groq API key near the top of the <script> block.'
+        );
+        return;
+      }
+
+      await runQualification(leadMessage);
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // handleClear()
+    // Clears the form, shows a brief confirmation message, then fully resets
+    // the UI after 2 seconds. The 2-second delay is intentional so the user
+    // sees the confirmation before everything disappears.
+    // ─────────────────────────────────────────────────────────────────────────
+    function handleClear() {
+      console.log('[Firone] Clear button clicked — showing confirmation before reset');
+
+      // Show the confirmation message
+      clearConfirm.classList.add('visible');
+
+      // Wait 2 seconds, then fully reset the form
+      setTimeout(() => {
+        leadInput.value = '';
+        updateCharCounter();         // reset the counter to 0
+        hideValidationError();
+        hideError();
+        hideResults();
+        clearConfirm.classList.remove('visible');
+        lastSubmittedMessage = '';   // clear stored message so retry doesn't re-fire old input
+        leadInput.focus();
+        console.log('[Firone] Form fully reset after clear confirmation');
+      }, 2000);
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // handleRetry()
+    // Re-submits the last message that triggered an error. This allows the
+    // user to retry without having to retype or repaste the lead text.
+    // ─────────────────────────────────────────────────────────────────────────
+    async function handleRetry() {
+      if (!lastSubmittedMessage) {
+        console.warn('[Firone] Retry clicked but no stored message found');
+        return;
+      }
+
+      console.log('[Firone] Retry button clicked — re-submitting last message');
+      hideError();
+      await runQualification(lastSubmittedMessage);
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // makeCopyHandler(getTextFn, btn)
+    // Returns a click handler that copies text to the clipboard and shows
+    // 'Copied!' on the button for 2 seconds before reverting to 'Copy'.
+    // Accepts a function to get the current text so it reads the live value
+    // at click time, not at handler creation time.
+    // ─────────────────────────────────────────────────────────────────────────
+    function makeCopyHandler(getTextFn, btn) {
+      return async function () {
+        const text = getTextFn();
+
+        // Do nothing if the card hasn't been populated yet
+        if (!text || text === '—') return;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          console.log('[Firone] Copied to clipboard:', text.substring(0, 40));
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+        } catch (err) {
+          console.error('[Firone] Clipboard copy failed:', err);
+          btn.textContent = 'Failed';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+        }
+      };
+    }
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // EVENT LISTENERS
+    // Wire all interactive elements to their handlers.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Main buttons
+    qualifyBtn.addEventListener('click', handleQualify);
+    clearBtn.addEventListener('click', handleClear);
+    retryBtn.addEventListener('click', handleRetry);
+
+    // Save as PDF — triggers the browser print dialog so the user can save as PDF
+    savePdfBtn.addEventListener('click', function () {
+      console.log('[Firone] Save as PDF button clicked — opening print dialog');
+      window.print();
+    });
+
+    // Live character counter — fires on every keystroke
+    leadInput.addEventListener('input', function () {
+      updateCharCounter();
+      // Clear inline validation error as soon as the user starts typing again
+      if (validationError.classList.contains('visible')) {
+        hideValidationError();
+      }
+    });
+
+    // Copy buttons — one handler per card, reading the live value element
+    copyLeadTypeBtn.addEventListener('click',
+      makeCopyHandler(() => valueLeadType.textContent, copyLeadTypeBtn)
+    );
+    copyUrgencyBtn.addEventListener('click',
+      makeCopyHandler(() => valueUrgency.textContent, copyUrgencyBtn)
+    );
+    copyRecommendedBtn.addEventListener('click',
+      makeCopyHandler(() => valueRecommendedAction.textContent, copyRecommendedBtn)
+    );
+    copyConfidenceBtn.addEventListener('click',
+      makeCopyHandler(() => valueConfidence.textContent, copyConfidenceBtn)
+    );
+    copyDraftBtn.addEventListener('click',
+      makeCopyHandler(() => valueDraftResponse.textContent, copyDraftBtn)
+    );
+
+    // Keyboard shortcut: Cmd+Enter (Mac) or Ctrl+Enter (Windows) submits the form
+    leadInput.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        console.log('[Firone] Keyboard shortcut triggered (Cmd/Ctrl+Enter)');
+        handleQualify();
+      }
+    });
+
+    // Dismiss the setup notice banner — hides it for the rest of the session
+    document.getElementById('dismiss-notice').addEventListener('click', function () {
+      document.getElementById('setup-notice').style.display = 'none';
+    });
+
+    // Initialise the counter on load so it starts at '0 characters'
+    updateCharCounter();
+
+    console.log('[Firone] AI Lead Qualifier v2 initialised. Groq endpoint:', GROQ_ENDPOINT);
+  </script>
+</body>
+</html>
