@@ -1,12 +1,12 @@
 # AI Lead Qualifier
 
-A lightweight, browser-based tool that takes any lead description and returns five structured outputs in seconds — built for automation specialists and small business owners who need fast, consistent lead triage without a CRM or manual effort.
+A lightweight, browser-based tool that takes any lead description and returns five structured outputs in seconds; built for automation specialists and small business owners who need fast, consistent lead triage without a CRM or manual effort.
 
 ---
 
 ## What It Does
 
-Paste a raw lead description — a WhatsApp message, form submission, email, or a few sentences about a prospect; and the app returns a structured qualification report covering Lead Type, Urgency, Recommended Action, a Draft Response, and a Confidence Level. It is designed for freelancers, automation consultants, and small business owners who handle leads manually and want to move faster without building a full CRM workflow.
+Paste a raw lead description; a WhatsApp message, form submission, email, or a few sentences about a prospect; and the app returns a structured qualification report covering Lead Type, Urgency, Recommended Action, a Draft Response, and a Confidence Level. It is designed for freelancers, automation consultants, and small business owners who handle leads manually and want to move faster without building a full CRM workflow.
 
 ---
 
