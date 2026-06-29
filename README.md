@@ -18,12 +18,6 @@ No sign-up required. Add your Groq API key in the settings panel and start quali
 
 ---
 
-## Screenshots
-
-*Screenshots coming soon.*
-
----
-
 ## How to Run Locally
 
 1. Download the `firone-lead-qualifier-final.html` file from this repository
