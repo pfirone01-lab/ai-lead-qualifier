@@ -51,7 +51,7 @@ The entire app lives in one HTML file; no frameworks, no build tools, no backend
 
 ## About the Builder
 
-**Philemon Firone** is an n8n automation specialist and bot developer based in Nigeria who helps small businesses replace manual processes with reliable, scalable workflow systems. He builds using n8n, REST APIs, Claude, and messaging platforms like WhatsApp and Telegram.
+**Philemon Firone** is an n8n automation specialist and bot developer based in Nigeria who helps small businesses replace manual processes with reliable, scalable workflow systems. He builds using n8n, Botpress, Apify, REST APIs, Claude, and messaging platforms like WhatsApp and Telegram.
 
 [Connect on LinkedIn →](https://www.linkedin.com/in/philemon-firone-338529299/)
 
