@@ -51,6 +51,6 @@ The entire app lives in one HTML file; no frameworks, no build tools, no backend
 
 ---
 
-## Part of the 30-Day Course
+## Part of the 30-Day Challenge
 
-This tool was built as the capstone project of a 30-day intensive course focused on building real-world AI and automation systems using Claude and n8n. Over 30 days, the course covered prompt engineering, workflow design, multi-step agent logic, API integration, and client-ready system delivery. The AI Lead Qualifier represents the full stack of those skills applied to a single, practical, shippable product.
+This tool was built as the capstone project of a 30-day intensive challenge focused on building real-world AI and automation systems using Claude and n8n. Over 30 days, the course covered prompt engineering, workflow design, multi-step agent logic, API integration, and client-ready system delivery. The AI Lead Qualifier represents the full stack of those skills applied to a single, practical, shippable product.
